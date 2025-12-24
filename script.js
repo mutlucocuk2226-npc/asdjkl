@@ -44,8 +44,8 @@ function loadGame(gameId) {
     currentGame = gameId;
 
     if (gameId === 'snake') startSnakeGame();
-    else if (gameId === 'memory') alert('Hafıza oyunu yakında eklenecek!'); // Burayı sonra dolduracağız
-    else if (gameId === 'race') alert('Araba yarışı yakında eklenecek!');   // Burayı sonra dolduracağız
+    else if (gameId === 'memory') alert('Hafıza oyunu yakında eklenecek!');
+    else if (gameId === 'race') startRaceGame(); // <-- BURAYI GÜNCELLEDİK
 }
 
 backBtn.onclick = () => {
@@ -140,6 +140,105 @@ function startSnakeGame() {
 
     document.addEventListener("keydown", keyPush);
     activeGameInterval = setInterval(gameLoop, 1000 / 10); // 10 FPS
+}
+// --- 3. ARABA YARIŞI OYUNU MANTIĞI ---
+function startRaceGame() {
+    // Değişkenler
+    const carWidth = 40;
+    const carHeight = 70;
+    let playerX = canvas.width / 2 - carWidth / 2;
+    let playerY = canvas.height - 100;
+    let obstacles = [];
+    let score = 0;
+    let speed = 5;
+    let roadMarkingY = 0; // Yol çizgilerinin hareketi için
+
+    // Klavye Kontrolleri (Sağ - Sol)
+    function handleInput(e) {
+        if (e.key === "ArrowLeft" && playerX > 0) {
+            playerX -= 20;
+        }
+        if (e.key === "ArrowRight" && playerX < canvas.width - carWidth) {
+            playerX += 20;
+        }
+    }
+    document.addEventListener("keydown", handleInput);
+
+    function gameLoop() {
+        // 1. Temizle ve Arka Planı Çiz (Yol)
+        ctx.fillStyle = "#333"; // Asfalt rengi
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 2. Yol Çizgilerini Çiz (Hareket Efekti)
+        ctx.fillStyle = "#fff";
+        roadMarkingY += speed;
+        if (roadMarkingY > 40) roadMarkingY = 0;
+        
+        for (let i = -40; i < canvas.height; i += 40) {
+            // Yolun ortasına kesik çizgiler
+            ctx.fillRect(canvas.width / 2 - 2, i + roadMarkingY, 4, 20);
+        }
+        
+        // Yol kenar şeritleri
+        ctx.fillStyle = score % 20 < 10 ? "#e94560" : "#fff"; // Yanıp sönen kenarlar
+        ctx.fillRect(0, 0, 10, canvas.height);
+        ctx.fillRect(canvas.width - 10, 0, 10, canvas.height);
+
+        // 3. Oyuncuyu Çiz
+        ctx.fillStyle = "#00d2d3"; // Oyuncu araba rengi (Mavi)
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "#00d2d3";
+        ctx.fillRect(playerX, playerY, carWidth, carHeight);
+        ctx.shadowBlur = 0; // Diğer çizimler parlamasın
+
+        // 4. Engelleri Yönet (Oluştur ve Hareket Ettir)
+        // Her 40 framede bir yeni engel (hıza göre zorluk artabilir)
+        if (Math.random() < 0.03) { 
+            let obstacleX = Math.random() * (canvas.width - carWidth - 20) + 10;
+            obstacles.push({ x: obstacleX, y: -100, width: carWidth, height: carHeight });
+        }
+
+        for (let i = 0; i < obstacles.length; i++) {
+            let obs = obstacles[i];
+            obs.y += speed; // Engeli aşağı indir
+            
+            // Engeli Çiz
+            ctx.fillStyle = "#ff6b6b"; // Düşman araba rengi (Kırmızı)
+            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+
+            // Çarpışma Kontrolü
+            if (
+                playerX < obs.x + obs.width &&
+                playerX + carWidth > obs.x &&
+                playerY < obs.y + obs.height &&
+                playerY + carHeight > obs.y
+            ) {
+                // Oyun Bitti
+                clearInterval(activeGameInterval);
+                document.removeEventListener("keydown", handleInput);
+                ctx.fillStyle = "white";
+                ctx.font = "30px Arial";
+                ctx.fillText("OYUN BİTTİ!", canvas.width/2 - 90, canvas.height/2);
+                ctx.font = "20px Arial";
+                ctx.fillText("Puan: " + score, canvas.width/2 - 40, canvas.height/2 + 40);
+                return;
+            }
+
+            // Ekrandan çıkan engelleri sil ve puan ver
+            if (obs.y > canvas.height) {
+                obstacles.splice(i, 1);
+                i--;
+                score++;
+                scoreElement.innerText = score;
+                
+                // Her 10 puanda bir hızı hafifçe artır
+                if(score % 10 === 0) speed += 0.5; 
+            }
+        }
+    }
+
+    // Oyunu Başlat (30 FPS)
+    activeGameInterval = setInterval(gameLoop, 1000 / 30);
 }
 
 // Başlat
