@@ -1,0 +1,20 @@
+[
+  {
+    "id": "snake",
+    "title": "Yılan Oyunu",
+    "description": "Klasik yılan oyunu. Yemi ye ve uza!",
+    "icon": "🐍"
+  },
+  {
+    "id": "memory",
+    "title": "Hafıza Oyunu",
+    "description": "Kartları eşleştir, hafızanı test et.",
+    "icon": "🧠"
+  },
+  {
+    "id": "race",
+    "title": "Araba Yarışı",
+    "description": "Engellerden kaç ve en yüksek puanı yap.",
+    "icon": "🏎️"
+  }
+]
