@@ -8,19 +8,20 @@
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>🕹️ Oyun Kutusu</h1>
-            <button id="back-btn" class="hidden">🔙 Menüye Dön</button>
-        </header>
+    <div id="game-area" class="hidden">
+    <div id="score-board">Puan: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div id="memory-grid" class="memory-grid hidden"></div>
+    <p class="controls-hint" id="hint-text">Yön tuşlarını kullanın</p>
 
-        <div id="game-menu" class="game-grid">
-            </div>
-
-        <div id="game-area" class="hidden">
-            <div id="score-board">Puan: <span id="score">0</span></div>
-            <canvas id="gameCanvas" width="400" height="400"></canvas>
-            <p class="controls-hint">Yön tuşlarını kullanın</p>
+    <div id="mobile-controls" class="mobile-controls">
+        <div class="control-row">
+            <button class="ctrl-btn" id="ctrl-up">▲</button>
+        </div>
+        <div class="control-row">
+            <button class="ctrl-btn" id="ctrl-left">◀</button>
+            <button class="ctrl-btn" id="ctrl-down">▼</button>
+            <button class="ctrl-btn" id="ctrl-right">▶</button>
         </div>
     </div>
 
