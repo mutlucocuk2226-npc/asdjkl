@@ -1,0 +1,76 @@
+:root {
+    --bg-color: #1a1a2e;
+    --card-bg: #16213e;
+    --accent: #e94560;
+    --text: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+h1 { margin-bottom: 20px; }
+
+/* Menü Grid Yapısı */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.game-card {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    border: 2px solid transparent;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.game-icon { font-size: 3rem; display: block; margin-bottom: 10px; }
+
+/* Oyun Alanı */
+.hidden { display: none !important; }
+
+canvas {
+    background-color: #000;
+    border: 4px solid var(--accent);
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+    max-width: 100%;
+}
+
+#back-btn {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#score-board {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
