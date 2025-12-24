@@ -44,7 +44,7 @@ function loadGame(gameId) {
     currentGame = gameId;
 
     if (gameId === 'snake') startSnakeGame();
-    else if (gameId === 'memory') alert('Hafıza oyunu yakında eklenecek!');
+    else if (gameId === 'memory') startMemoryGame();
     else if (gameId === 'race') startRaceGame(); // <-- BURAYI GÜNCELLEDİK
 }
 
@@ -243,3 +243,66 @@ function startRaceGame() {
 
 // Başlat
 init();
+// --- 4. HAFIZA OYUNU MANTIĞI ---
+function startMemoryGame() {
+    const memoryGrid = document.getElementById('memory-grid');
+    const hintText = document.getElementById('hint-text');
+    
+    // Canvas'ı gizle, Grid'i göster
+    canvas.classList.add('hidden');
+    memoryGrid.classList.remove('hidden');
+    hintText.innerText = "Eşleşen kartları bul!";
+
+    const emojis = ['🍎', '🍌', '🍇', '🍓', '🍒', '🍍', '🥝', '🍉'];
+    let cards = [...emojis, ...emojis]; // Her emoji'den iki tane
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let score = 0;
+
+    // Kartları Karıştır (Fisher-Yates Algoritması)
+    cards.sort(() => Math.random() - 0.5);
+
+    memoryGrid.innerHTML = '';
+    cards.forEach((emoji, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.emoji = emoji;
+        card.dataset.index = index;
+        card.innerHTML = '?';
+        card.onclick = () => flipCard(card);
+        memoryGrid.appendChild(card);
+    });
+
+    function flipCard(card) {
+        if (flippedCards.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+            card.classList.add('flipped');
+            card.innerHTML = card.dataset.emoji;
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                setTimeout(checkMatch, 700);
+            }
+        }
+    }
+
+    function checkMatch() {
+        const [card1, card2] = flippedCards;
+        if (card1.dataset.emoji === card2.dataset.emoji) {
+            card1.classList.add('matched');
+            card2.classList.add('matched');
+            matchedPairs++;
+            score += 20;
+            scoreElement.innerText = score;
+
+            if (matchedPairs === emojis.length) {
+                hintText.innerText = "Tebrikler! Tüm eşleri buldun.";
+            }
+        } else {
+            card1.classList.remove('flipped');
+            card2.classList.remove('flipped');
+            card1.innerHTML = '?';
+            card2.innerHTML = '?';
+        }
+        flippedCards = [];
+    }
+}
