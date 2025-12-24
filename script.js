@@ -37,15 +37,27 @@ function renderMenu(games) {
 }
 
 function loadGame(gameId) {
+    if (activeGameInterval) clearInterval(activeGameInterval);
+
     menuElement.classList.add('hidden');
     gameArea.classList.remove('hidden');
     backBtn.classList.remove('hidden');
     scoreElement.innerText = '0';
     currentGame = gameId;
+    
+    // Mobil kontrol kurulumunu başlat
+    setupMobileControls();
 
-    if (gameId === 'snake') startSnakeGame();
-    else if (gameId === 'memory') startMemoryGame();
-    else if (gameId === 'race') startRaceGame(); // <-- BURAYI GÜNCELLEDİK
+    if (gameId === 'snake') {
+        toggleMobileControls(true);
+        startSnakeGame();
+    } else if (gameId === 'memory') {
+        toggleMobileControls(false); // Hafıza oyununda oklara gerek yok
+        startMemoryGame();
+    } else if (gameId === 'race') {
+        toggleMobileControls(true);
+        startRaceGame();
+    }
 }
 
 backBtn.onclick = () => {
@@ -306,3 +318,52 @@ function startMemoryGame() {
         flippedCards = [];
     }
 }
+// --- MOBİL KONTROL SİSTEMİ ---
+function setupMobileControls() {
+    const btns = {
+        'ctrl-up': 'ArrowUp',
+        'ctrl-down': 'ArrowDown',
+        'ctrl-left': 'ArrowLeft',
+        'ctrl-right': 'ArrowRight'
+    };
+
+    Object.keys(btns).forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        
+        // Hem dokunma (Touch) hem tıklama (Mouse) için
+        const triggerKey = (e) => {
+            e.preventDefault();
+            // Mevcut klavye sistemini tetiklemek için yapay bir Event oluşturuyoruz
+            const fakeEvent = new KeyboardEvent('keydown', {
+                key: btns[btnId],
+                keyCode: getKeyCode(btns[btnId])
+            });
+            document.dispatchEvent(fakeEvent);
+        };
+
+        btn.addEventListener('touchstart', triggerKey);
+        btn.addEventListener('mousedown', triggerKey);
+    });
+}
+
+// Eski tarayıcı desteği/keyCode kullanan oyunlarımız için yardımcı
+function getKeyCode(keyName) {
+    switch(keyName) {
+        case 'ArrowLeft': return 37;
+        case 'ArrowUp': return 38;
+        case 'ArrowRight': return 39;
+        case 'ArrowDown': return 40;
+        default: return 0;
+    }
+}
+
+// Hafıza oyunu seçildiğinde kontrolleri gizle, diğerlerinde göster
+function toggleMobileControls(show) {
+    const controls = document.getElementById('mobile-controls');
+    if (show) controls.classList.remove('hidden');
+    else controls.classList.add('hidden');
+}
+
+// loadGame fonksiyonunun içinde bunu çağıralım
+// Mevcut loadGame fonksiyonunun en sonuna setupMobileControls() ekle
+// Ve hafıza oyunu için kontrolleri gizle
